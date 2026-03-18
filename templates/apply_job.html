@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}Apply for Job - Hirevue{% endblock %}
+
+{% block content %}
+<div class="container-fluid min-vh-100 py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg border-0 rounded-3">
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-file-upload fa-4x text-primary mb-3"></i>
+                        <h2 class="fw-bold">Apply for Position</h2>
+                        <p class="text-muted">Upload your resume to apply</p>
+                    </div>
+
+                    <form method="POST" action="/submit_application/{{ job_id }}" enctype="multipart/form-data">
+                        <div class="mb-4">
+                            <label for="resume" class="form-label fw-semibold">
+                                <i class="fas fa-file me-2"></i>Upload Resume
+                            </label>
+                            <div class="form-control-lg border-2 border-dashed p-5 text-center" id="dropZone">
+                                <i class="fas fa-cloud-upload-alt fa-3x text-primary mb-3"></i>
+                                <p class="mb-1">Drag and drop your resume here or click to browse</p>
+                                <small class="text-muted">Supported formats: PDF, DOCX (Max 5MB)</small>
+                                <input type="file" id="resume" name="resume" accept=".pdf,.docx,.doc" required class="d-none">
+                            </div>
+                            <div id="fileName" class="mt-3"></div>
+                        </div>
+
+                        {% if company_website %}
+                        <div class="alert alert-info" role="alert">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Company Website:</strong> 
+                            <a href="{{ company_website }}" target="_blank">{{ company_website }}</a>
+                        </div>
+                        {% endif %}
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg fw-bold">
+                                <i class="fas fa-paper-plane me-2"></i>Submit Application
+                            </button>
+                            <a href="/user_dashboard" class="btn btn-outline-secondary btn-lg">
+                                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('resume');
+const fileName = document.getElementById('fileName');
+
+// Click to browse
+dropZone.addEventListener('click', () => fileInput.click());
+
+// Drag and drop
+dropZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropZone.style.backgroundColor = '#f0f0f0';
+});
+
+dropZone.addEventListener('dragleave', () => {
+    dropZone.style.backgroundColor = 'transparent';
+});
+
+dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZone.style.backgroundColor = 'transparent';
+    fileInput.files = e.dataTransfer.files;
+    updateFileName();
+});
+
+fileInput.addEventListener('change', updateFileName);
+
+function updateFileName() {
+    if (fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        fileName.innerHTML = `<div class="alert alert-success" role="alert"><i class="fas fa-check-circle me-2"></i>Selected: <strong>${file.name}</strong></div>`;
+    } else {
+        fileName.innerHTML = '';
+    }
+}
+</script>
+{% endblock %}

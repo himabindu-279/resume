@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block title %}Application Results - Hirevue{% endblock %}
+
+{% block content %}
+<div class="container-fluid min-vh-100 py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <div class="card shadow-lg border-0 rounded-3">
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        {% if status == 'Selected' %}
+                        <i class="fas fa-check-circle fa-4x text-success mb-3"></i>
+                        <h2 class="fw-bold text-success">Congratulations!</h2>
+                        <p class="text-muted">Your application has been selected</p>
+                        {% elif status == 'Rejected' %}
+                        <i class="fas fa-times-circle fa-4x text-danger mb-3"></i>
+                        <h2 class="fw-bold text-danger">Application Not Selected</h2>
+                        <p class="text-muted">Thank you for your interest</p>
+                        {% elif status == 'Duplicate' %}
+                        <i class="fas fa-copy fa-4x text-warning mb-3"></i>
+                        <h2 class="fw-bold text-warning">Duplicate Application</h2>
+                        <p class="text-muted">Similar resume previously submitted</p>
+                        {% elif status == 'Fake' %}
+                        <i class="fas fa-exclamation-triangle fa-4x text-danger mb-3"></i>
+                        <h2 class="fw-bold text-danger">Invalid Application</h2>
+                        <p class="text-muted">Resume appears incomplete or invalid</p>
+                        {% else %}
+                        <i class="fas fa-clock fa-4x text-info mb-3"></i>
+                        <h2 class="fw-bold text-info">Application Submitted</h2>
+                        <p class="text-muted">Your application is under review</p>
+                        {% endif %}
+                    </div>
+
+                    {% if job %}
+                    <!-- Job Information -->
+                    <div class="card bg-light border-0 mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold">
+                                <i class="fas fa-briefcase me-2"></i>{{ job[2] }}
+                            </h5>
+                            <h6 class="card-subtitle mb-3 text-muted">
+                                <i class="fas fa-building me-2"></i>{{ job[1] }}
+                            </h6>
+                            <p class="card-text">{{ job[4] }}</p>
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <small class="text-muted">
+                                        <i class="fas fa-users me-1"></i>Vacancies: {{ job[3] }}
+                                    </small>
+                                </div>
+                                <div class="col-sm-6">
+                                    <small class="text-muted">
+                                        <i class="fas fa-tags me-1"></i>Skills: {{ job[5] }}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Application Details -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="card border-0 bg-primary text-white">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-percentage fa-2x mb-2"></i>
+                                    <h4 class="card-title">{{ score }}%</h4>
+                                    <p class="card-text">Match Score</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card border-0 bg-secondary text-white">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-chart-line fa-2x mb-2"></i>
+                                    <h4 class="card-title">{{ status }}</h4>
+                                    <p class="card-text">Application Status</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if missing_skills %}
+                    <!-- Missing Skills -->
+                    <div class="card border-warning mb-4">
+                        <div class="card-header bg-warning text-dark">
+                            <i class="fas fa-exclamation-triangle me-2"></i>Missing Skills
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">Consider learning these skills to improve future applications:</p>
+                            <div class="d-flex flex-wrap gap-2">
+                                {% for skill in missing_skills.split(',') %}
+                                <span class="badge bg-warning text-dark">{{ skill.strip() }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if job_skills %}
+                    <!-- Required Skills -->
+                    <div class="card border-info mb-4">
+                        <div class="card-header bg-info text-white">
+                            <i class="fas fa-check-circle me-2"></i>Required Skills
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">Skills required for this position:</p>
+                            <div class="d-flex flex-wrap gap-2">
+                                {% for skill in job_skills.split(',') %}
+                                <span class="badge bg-info">{{ skill.strip() }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if resume_text %}
+                    <!-- Resume Preview -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-file-alt me-2"></i>Resume Preview
+                        </div>
+                        <div class="card-body">
+                            <div class="bg-light p-3 rounded" style="max-height: 300px; overflow-y: auto;">
+                                <pre class="mb-0">{{ resume_text }}</pre>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Action Buttons -->
+                    <div class="d-grid gap-2">
+                        <a href="/user_dashboard" class="btn btn-primary btn-lg">
+                            <i class="fas fa-tachometer-alt me-2"></i>Back to Dashboard
+                        </a>
+                        <a href="/career_guidance" class="btn btn-outline-success btn-lg">
+                            <i class="fas fa-graduation-cap me-2"></i>Get Career Guidance
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

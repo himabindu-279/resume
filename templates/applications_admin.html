@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}View Applications - Hirevue Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-5">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h1 class="fw-bold">
+                <i class="fas fa-file-alt me-3"></i>All Applications
+            </h1>
+        </div>
+    </div>
+
+    <div class="card shadow-lg border-0 rounded-3">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Applicant</th>
+                        <th>Email / Resume</th>
+                        <th>Resume</th>
+                        <th>Job Title</th>
+                        <th>Company</th>
+                        <th>Score</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for app in applications %}
+                    <tr>
+                        <td><strong>{{ app[1] or 'N/A' }}</strong></td>
+                        <td class="text-muted small">{{ app[2] }}</td>
+                        <td>{{ app[3] }}</td>
+                        <td>{{ app[4] }}</td>
+                        <td>{{ app[5] }}</td>
+                        <td>
+                            <span class="badge bg-primary">{{ app[6] }}%</span>
+                        </td>
+                        <td>
+                            {% if app[7] == 'Selected' %}
+                            <span class="badge bg-success">Selected</span>
+                            {% else %}
+                            <span class="badge bg-danger">Rejected</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="d-flex flex-wrap gap-2">
+                                <a href="/download_resume/{{ app[0] }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-download"></i>
+                                </a>
+                                <a href="/application_logs/{{ app[0] }}" class="btn btn-sm btn-outline-info">
+                                    <i class="fas fa-log"></i>
+                                </a>
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                        Update
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        <li><a class="dropdown-item text-success" href="/update_application_status/{{ app[0] }}/Selected">Mark Selected</a></li>
+                                        <li><a class="dropdown-item text-danger" href="/update_application_status/{{ app[0] }}/Rejected">Mark Rejected</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="8" class="text-center text-muted py-5">
+                            <i class="fas fa-inbox fa-3x mb-3"></i>
+                            <p>No applications found</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a href="/admin_dashboard" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

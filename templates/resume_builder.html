@@ -1,0 +1,272 @@
+{% extends "base.html" %}
+
+{% block title %}Resume Builder - Hirevue{% endblock %}
+
+{% block extra_css %}
+<style>
+    .resume-section {
+        background: #fdfdfd;
+        border: 1px solid #eee;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 25px;
+    }
+    .section-header {
+        border-bottom: 2px solid #667eea;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+        color: #333;
+        font-weight: 600;
+    }
+    .dynamic-entry {
+        background: #fff;
+        border: 1px dashed #ccc;
+        border-radius: 6px;
+        padding: 15px;
+        position: relative;
+        margin-bottom: 15px;
+    }
+    .remove-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        color: #dc3545;
+        cursor: pointer;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1><i class="fas fa-file-pdf text-gradient"></i> Resume Builder</h1>
+            <p class="text-muted">Fill out your details to generate a pristine, professional resume.</p>
+        </div>
+    </div>
+
+    <form action="/resume_builder" method="POST">
+        
+        <!-- Personal Info -->
+        <div class="resume-section">
+            <h4 class="section-header"><i class="fas fa-user-circle"></i> Personal Details</h4>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">Full Name</label>
+                    <input type="text" class="form-control" name="name" value="{{ user[0] if user else '' }}" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">Email Address</label>
+                    <input type="email" class="form-control" name="email" value="{{ user[1] if user else '' }}" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">Phone Number</label>
+                    <input type="text" class="form-control" name="phone" placeholder="(123) 456-7890">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">Location / LinkedIN / Portfolio</label>
+                    <input type="text" class="form-control" name="links" value="{{ user[2] if user and user[2] else '' }}" placeholder="New York, NY | linkedin.com/in/john">
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary -->
+        <div class="resume-section">
+            <h4 class="section-header"><i class="fas fa-align-left"></i> Professional Summary</h4>
+            <div class="mb-3">
+                <textarea class="form-control" name="summary" rows="4" placeholder="Dedicated professional with 5+ years of experience in..."></textarea>
+            </div>
+        </div>
+
+        <!-- Experience -->
+        <div class="resume-section" id="experience-section">
+            <h4 class="section-header"><i class="fas fa-briefcase"></i> Work Experience</h4>
+            
+            <div id="experience-container">
+                <div class="dynamic-entry">
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <label class="fw-bold small">Job Title</label>
+                            <input type="text" class="form-control form-control-sm" name="exp_title[]" placeholder="Software Engineer">
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <label class="fw-bold small">Company</label>
+                            <input type="text" class="form-control form-control-sm" name="exp_company[]" placeholder="Tech Corp">
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <label class="fw-bold small">Dates</label>
+                            <input type="text" class="form-control form-control-sm" name="exp_dates[]" placeholder="Jan 2020 - Present">
+                        </div>
+                        <div class="col-12 mb-2">
+                            <label class="fw-bold small">Details/Achievements</label>
+                            <textarea class="form-control form-control-sm" name="exp_details[]" rows="3" placeholder="- Developed new feature x..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <button type="button" class="btn btn-sm btn-outline-primary mt-2" onclick="addExperience()">
+                <i class="fas fa-plus"></i> Add Another Experience
+            </button>
+        </div>
+
+        <!-- Education -->
+        <div class="resume-section" id="education-section">
+            <h4 class="section-header"><i class="fas fa-graduation-cap"></i> Education</h4>
+            
+            <div id="education-container">
+                <div class="dynamic-entry">
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <label class="fw-bold small">Degree / Certification</label>
+                            <input type="text" class="form-control form-control-sm" name="edu_degree[]" placeholder="B.S. in Computer Science">
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <label class="fw-bold small">Institution</label>
+                            <input type="text" class="form-control form-control-sm" name="edu_school[]" placeholder="University of Technology">
+                        </div>
+                        <div class="col-md-12 mb-2">
+                            <label class="fw-bold small">Dates & Additional Details</label>
+                            <input type="text" class="form-control form-control-sm" name="edu_details[]" placeholder="Graduated May 2019, GPA 3.8">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button type="button" class="btn btn-sm btn-outline-primary mt-2" onclick="addEducation()">
+                <i class="fas fa-plus"></i> Add Another Education
+            </button>
+        </div>
+
+        <!-- Projects -->
+        <div class="resume-section" id="projects-section">
+            <h4 class="section-header"><i class="fas fa-project-diagram"></i> Projects</h4>
+            
+            <div id="projects-container">
+                <div class="dynamic-entry">
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <label class="fw-bold small">Project Title / Tech Stack</label>
+                            <input type="text" class="form-control form-control-sm" name="proj_title[]" placeholder="Social Media App / Django">
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <label class="fw-bold small">Dates</label>
+                            <input type="text" class="form-control form-control-sm" name="proj_dates[]" placeholder="June 2025">
+                        </div>
+                        <div class="col-12 mb-2">
+                            <label class="fw-bold small">Details/Features</label>
+                            <textarea class="form-control form-control-sm" name="proj_details[]" rows="3" placeholder="- User Authentication..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button type="button" class="btn btn-sm btn-outline-primary mt-2" onclick="addProject()">
+                <i class="fas fa-plus"></i> Add Another Project
+            </button>
+        </div>
+
+        <!-- Certifications -->
+        <div class="resume-section" id="certifications-section">
+            <h4 class="section-header"><i class="fas fa-certificate"></i> Certifications</h4>
+            <div class="mb-3">
+                <textarea class="form-control" name="certifications" rows="3" placeholder="Introduction to Generative AI, Internship Certificate at Hippocloud..."></textarea>
+                <small class="text-muted">Put each certification on a new line or separate by commas.</small>
+            </div>
+        </div>
+
+        <!-- Skills -->
+        <div class="resume-section">
+            <h4 class="section-header"><i class="fas fa-code"></i> Skills</h4>
+            <div class="mb-3">
+                <textarea class="form-control" name="skills" rows="3" placeholder="Python, Django, AWS, SQL, React, Communication..."></textarea>
+                <small class="text-muted">Separate skills by commas for best formatting.</small>
+            </div>
+        </div>
+
+        <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-primary-custom btn-lg"><i class="fas fa-cogs"></i> Generate Resume</button>
+            <a href="/user_dashboard" class="btn btn-outline-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+{% block extra_js %}
+<script>
+function addExperience() {
+    const container = document.getElementById('experience-container');
+    const newEntry = document.createElement('div');
+    newEntry.className = 'dynamic-entry';
+    newEntry.innerHTML = `
+        <i class="fas fa-times remove-btn" onclick="this.parentElement.remove()"></i>
+        <div class="row">
+            <div class="col-md-6 mb-2">
+                <label class="fw-bold small">Job Title</label>
+                <input type="text" class="form-control form-control-sm" name="exp_title[]" placeholder="Job Title">
+            </div>
+            <div class="col-md-6 mb-2">
+                <label class="fw-bold small">Company</label>
+                <input type="text" class="form-control form-control-sm" name="exp_company[]" placeholder="Company Name">
+            </div>
+            <div class="col-md-6 mb-2">
+                <label class="fw-bold small">Dates</label>
+                <input type="text" class="form-control form-control-sm" name="exp_dates[]" placeholder="Start - End">
+            </div>
+            <div class="col-12 mb-2">
+                <label class="fw-bold small">Details/Achievements</label>
+                <textarea class="form-control form-control-sm" name="exp_details[]" rows="3" placeholder="- Accomplishment 1..."></textarea>
+            </div>
+        </div>
+    `;
+    container.appendChild(newEntry);
+}
+
+function addEducation() {
+    const container = document.getElementById('education-container');
+    const newEntry = document.createElement('div');
+    newEntry.className = 'dynamic-entry';
+    newEntry.innerHTML = `
+        <i class="fas fa-times remove-btn" onclick="this.parentElement.remove()"></i>
+        <div class="row">
+            <div class="col-md-6 mb-2">
+                <label class="fw-bold small">Degree / Certification</label>
+                <input type="text" class="form-control form-control-sm" name="edu_degree[]" placeholder="Degree">
+            </div>
+            <div class="col-md-6 mb-2">
+                <label class="fw-bold small">Institution</label>
+                <input type="text" class="form-control form-control-sm" name="edu_school[]" placeholder="Institution">
+            </div>
+            <div class="col-md-12 mb-2">
+                <label class="fw-bold small">Dates & Additional Details</label>
+                <input type="text" class="form-control form-control-sm" name="edu_details[]" placeholder="Graduation Year">
+            </div>
+        </div>
+    `;
+    container.appendChild(newEntry);
+}
+function addProject() {
+    const container = document.getElementById('projects-container');
+    const newEntry = document.createElement('div');
+    newEntry.className = 'dynamic-entry';
+    newEntry.innerHTML = `
+        <i class="fas fa-times remove-btn" onclick="this.parentElement.remove()"></i>
+        <div class="row">
+            <div class="col-md-6 mb-2">
+                <label class="fw-bold small">Project Title / Tech Stack</label>
+                <input type="text" class="form-control form-control-sm" name="proj_title[]" placeholder="Project Name">
+            </div>
+            <div class="col-md-6 mb-2">
+                <label class="fw-bold small">Dates</label>
+                <input type="text" class="form-control form-control-sm" name="proj_dates[]" placeholder="Date">
+            </div>
+            <div class="col-12 mb-2">
+                <label class="fw-bold small">Details/Features</label>
+                <textarea class="form-control form-control-sm" name="proj_details[]" rows="3" placeholder="- Feature description..."></textarea>
+            </div>
+        </div>
+    `;
+    container.appendChild(newEntry);
+}
+</script>
+{% endblock %}
+{% endblock %}

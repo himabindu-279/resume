@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ data.name }} - Resume</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            color: #333;
+            background-color: #f4f6f9;
+        }
+        
+        /* A4 Page Styling */
+        .resume-page {
+            max-width: 800px;
+            margin: 40px auto;
+            background: #fff;
+            padding: 50px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            min-height: 1056px; /* Approx 11 inches */
+        }
+        
+        .header-section {
+            text-align: center;
+            border-bottom: 2px solid #333;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .name {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        
+        .contact-info {
+            font-size: 14px;
+            color: #555;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #222;
+            border-bottom: 1px solid #aaa;
+            padding-bottom: 5px;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+        
+        .summary {
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .job-entry, .edu-entry {
+            margin-bottom: 15px;
+        }
+        
+        .entry-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 5px;
+        }
+        
+        .entry-title {
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .entry-company, .entry-school {
+            font-style: italic;
+            color: #555;
+            font-size: 15px;
+        }
+        
+        .entry-dates {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .entry-details p {
+            margin-bottom: 5px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .skills-list {
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        /* Web UI specific */
+        .print-actions {
+            max-width: 800px;
+            margin: 20px auto 0;
+            text-align: right;
+        }
+
+        /* Print Media Query */
+        @media print {
+            body { 
+                background-color: transparent; 
+                margin: 0; 
+                padding: 0; 
+            }
+            .resume-page {
+                box-shadow: none;
+                margin: 0 auto;
+                padding: 0;
+                width: 100%;
+                max-width: 100%;
+            }
+            .print-actions { 
+                display: none !important; 
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="print-actions">
+    <a href="/user_dashboard" class="btn btn-outline-secondary me-2"><i class="fas fa-arrow-left"></i> Back</a>
+    <button onclick="window.print()" class="btn btn-primary"><i class="fas fa-print"></i> Download PDF / Print</button>
+</div>
+
+<div class="resume-page">
+    
+    <div class="header-section">
+        <div class="name">{{ data.name }}</div>
+        <div class="contact-info">
+            {% if data.email %}<span><i class="fas fa-envelope me-1"></i> {{ data.email }}</span>{% endif %}
+            {% if data.phone %}<span><i class="fas fa-phone me-1"></i> {{ data.phone }}</span>{% endif %}
+            {% if data.links %}<span><i class="fas fa-map-marker-alt me-1"></i> {{ data.links }}</span>{% endif %}
+        </div>
+    </div>
+
+    {% if data.summary %}
+    <div class="section-title">Professional Summary</div>
+    <div class="summary">
+        {{ data.summary }}
+    </div>
+    {% endif %}
+
+    {% if data.experience and data.experience|length > 0 %}
+    <div class="section-title">Work Experience</div>
+    <div class="experience-list">
+        {% for exp in data.experience %}
+            {% if exp.title or exp.company %}
+            <div class="job-entry">
+                <div class="entry-header">
+                    <div>
+                        <span class="entry-title">{{ exp.title }}</span> 
+                        {% if exp.company %}<span class="entry-company">| {{ exp.company }}</span>{% endif %}
+                    </div>
+                    <div class="entry-dates">{{ exp.dates }}</div>
+                </div>
+                <div class="entry-details" style="white-space: pre-wrap;">{{ exp.details }}</div>
+            </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if data.projects and data.projects|length > 0 %}
+    <div class="section-title">Projects</div>
+    <div class="experience-list">
+        {% for proj in data.projects %}
+            {% if proj.title %}
+            <div class="job-entry">
+                <div class="entry-header">
+                    <div>
+                        <span class="entry-title">{{ proj.title }}</span> 
+                    </div>
+                    <div class="entry-dates">{{ proj.dates }}</div>
+                </div>
+                <div class="entry-details" style="white-space: pre-wrap;">{{ proj.details }}</div>
+            </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if data.education and data.education|length > 0 %}
+    <div class="section-title">Education</div>
+    <div class="education-list">
+        {% for edu in data.education %}
+            {% if edu.degree or edu.school %}
+            <div class="edu-entry">
+                <div class="entry-header">
+                    <div>
+                        <span class="entry-title">{{ edu.degree }}</span> 
+                        {% if edu.school %}<span class="entry-school">| {{ edu.school }}</span>{% endif %}
+                    </div>
+                </div>
+                <div class="entry-details">{{ edu.details }}</div>
+            </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if data.certifications and data.certifications|length > 0 %}
+    <div class="section-title">Certifications</div>
+    <div class="skills-list">
+        <ul style="margin-top: 5px; padding-left: 20px;">
+            {% for cert in data.certifications %}
+                <li>{{ cert }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    {% if data.skills_list %}
+    <div class="section-title">Technical Skills & Expertise</div>
+    <div class="skills-list">
+        <strong>Skills:</strong> 
+        {{ data.skills_list | join(", ") }}
+    </div>
+    {% endif %}
+    
+</div>
+
+</body>
+</html>

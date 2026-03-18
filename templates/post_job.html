@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Post a Job - Hirevue{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg border-0 rounded-3">
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-briefcase fa-4x text-primary mb-3"></i>
+                        <h2 class="fw-bold">Post a Job</h2>
+                        <p class="text-muted">Create a new job posting</p>
+                    </div>
+
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label for="title" class="form-label fw-semibold">
+                                <i class="fas fa-heading me-2"></i>Job Title
+                            </label>
+                            <input type="text" class="form-control form-control-lg" id="title" name="title" required placeholder="e.g., Senior Developer">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="company" class="form-label fw-semibold">
+                                <i class="fas fa-building me-2"></i>Company Name
+                            </label>
+                            <input type="text" class="form-control form-control-lg" id="company" name="company" placeholder="e.g., Tech Corp">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="skills" class="form-label fw-semibold">
+                                <i class="fas fa-cogs me-2"></i>Required Skills
+                            </label>
+                            <input type="text" class="form-control form-control-lg" id="skills" name="skills" placeholder="e.g., Python, React, SQL (comma-separated)">
+                            <small class="text-muted">Leave empty to auto-extract from description</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="vacancies" class="form-label fw-semibold">
+                                <i class="fas fa-users me-2"></i>Number of Vacancies
+                            </label>
+                            <input type="number" class="form-control form-control-lg" id="vacancies" name="vacancies" required min="1" placeholder="e.g., 5">
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="description" class="form-label fw-semibold">
+                                <i class="fas fa-align-left me-2"></i>Job Description
+                            </label>
+                            <textarea class="form-control" id="description" name="description" rows="6" required placeholder="Describe the job, responsibilities, and requirements..."></textarea>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg fw-bold">
+                                <i class="fas fa-plus-circle me-2"></i>Post Job
+                            </button>
+                            <a href="/" class="btn btn-outline-secondary btn-lg">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

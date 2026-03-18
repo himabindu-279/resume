@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}Course Notes - Hirevue{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4 align-items-center">
+        <div class="col-md-8">
+            <h1 class="mb-1"><i class="fas fa-book-open text-gradient"></i> {{ path[1] }} Study Notes</h1>
+            <p class="text-muted mb-0">Explore detailed materials for your recommended career path.</p>
+        </div>
+        <div class="col-md-4 text-end mt-3 mt-md-0">
+            <a href="/career_guidance" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Career Paths
+            </a>
+        </div>
+    </div>
+
+    <!-- Path Summary Card -->
+    <div class="card card-custom mb-5 border-start border-4 border-primary">
+        <div class="card-body">
+            <h5 class="card-title fw-bold text-primary mb-3">Path Overview</h5>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <h6 class="fw-bold text-muted mb-2">Target Careers:</h6>
+                    <div class="d-flex flex-wrap gap-2">
+                        {% for career in path[4].split(',') %}
+                        <span class="badge bg-light text-dark border"><i class="fas fa-briefcase text-secondary"></i> {{ career.strip() }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notes Accordion -->
+    <h3 class="mb-4"><i class="fas fa-list-ul"></i> Learning Modules</h3>
+    
+    <div class="accordion" id="notesAccordion">
+        {% for note in notes %}
+        <div class="accordion-item shadow-sm mb-3" style="border-radius: 8px; border: 1px solid #ebebeb; overflow: hidden;">
+            <h2 class="accordion-header" id="heading{{ loop.index }}">
+                <button class="accordion-button {% if not loop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ loop.index }}" aria-expanded="{% if loop.first %}true{% else %}false{% endif %}" aria-controls="collapse{{ loop.index }}" style="font-weight: 600; font-size: 1.1rem;">
+                    <i class="fas fa-laptop-code me-2 text-primary"></i> Module {{ loop.index }}: {{ note.title }}
+                </button>
+            </h2>
+            <div id="collapse{{ loop.index }}" class="accordion-collapse collapse {% if loop.first %}show{% endif %}" aria-labelledby="heading{{ loop.index }}" data-bs-parent="#notesAccordion">
+                <div class="accordion-body bg-light p-4" style="line-height: 1.7; font-size: 1.05rem;">
+                    <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                        <span class="badge bg-primary-subtle text-primary border">{{ note.course_title }}</span>
+                        <span class="badge bg-secondary-subtle text-secondary border">{{ note.difficulty }}</span>
+                        <span class="badge bg-info-subtle text-info border"><i class="fas fa-link me-1"></i>{{ note.source_platform }}</span>
+                    </div>
+                    <p class="mb-4">{{ note.content }}</p>
+
+                    <div class="mb-3">
+                        <h6 class="fw-bold mb-2"><i class="fas fa-book-open text-primary"></i> Course Overview</h6>
+                        <p class="mb-2 text-muted">
+                            This module is part of <strong>{{ note.course_title }}</strong> on {{ note.source_platform }} and focuses on practical,
+                            interview-relevant backend fundamentals.
+                        </p>
+                        <p class="mb-2 text-muted">
+                            It is designed for <strong>{{ note.difficulty }}</strong> learners and is usually completed in about
+                            <strong>{{ note.duration }}</strong> with consistent daily practice.
+                        </p>
+                        {% if note.source_url %}
+                        <a href="{{ note.source_url }}" target="_blank" rel="noopener" class="btn btn-link p-0">
+                            <i class="fas fa-arrow-up-right-from-square me-1"></i>Visit {{ note.source_platform }} Course Page
+                        </a>
+                        {% else %}
+                        <p class="mb-0 text-muted">Course platform link is not available for this module yet.</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <h6 class="fw-bold mb-2"><i class="fas fa-dumbbell text-success"></i> Practice Plan</h6>
+                        <ul class="mb-0">
+                            {% for step in note.practice %}
+                            <li>{{ step }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+
+                    <div class="mb-3">
+                        <h6 class="fw-bold mb-1"><i class="fas fa-hourglass-half text-info"></i> Suggested Duration</h6>
+                        <p class="mb-0 text-muted">{{ note.duration }}</p>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6 class="fw-bold mb-1"><i class="fas fa-user-tie text-warning"></i> Interview Focus</h6>
+                        <p class="mb-0 text-muted">{{ note.interview_focus }}</p>
+                    </div>
+
+                    <div class="mb-4">
+                        {% if note.source_url %}
+                        <a href="/course_reference/{{ note.id }}" target="_blank" rel="noopener" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-arrow-up-right-from-square me-1"></i>Open Platform Notes
+                        </a>
+                        <small class="text-muted ms-2">Reference opens from {{ note.source_platform }}.</small>
+                        {% else %}
+                        <span class="text-muted">External reference is not available for this module yet.</span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="alert alert-warning py-2 mb-0 d-inline-block">
+                        <i class="fas fa-tasks"></i> <strong>Next Step:</strong> Complete the interactive exercises for this module.
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock %}

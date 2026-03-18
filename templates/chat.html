@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+
+{% block title %}Chat Support - Hirevue{% endblock %}
+
+{% block extra_css %}
+<style>
+    .chat-shell {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .chat-board {
+        min-height: 460px;
+        max-height: 65vh;
+        overflow-y: auto;
+        background: linear-gradient(180deg, rgba(248, 250, 255, 0.95), rgba(239, 244, 255, 0.9));
+    }
+
+    .message-row {
+        display: flex;
+        margin-bottom: 1rem;
+    }
+
+    .message-row.user {
+        justify-content: flex-end;
+    }
+
+    .message-bubble {
+        max-width: 78%;
+        padding: 0.95rem 1rem;
+        border-radius: 18px;
+        box-shadow: 0 10px 25px rgba(28, 45, 94, 0.08);
+        white-space: pre-wrap;
+    }
+
+    .message-row.user .message-bubble {
+        background: #0d6efd;
+        color: #fff;
+        border-bottom-right-radius: 6px;
+    }
+
+    .message-row.assistant .message-bubble {
+        background: #ffffff;
+        color: #21304f;
+        border-bottom-left-radius: 6px;
+    }
+
+    .chat-empty {
+        border: 1px dashed rgba(13, 110, 253, 0.25);
+        background: rgba(255, 255, 255, 0.75);
+    }
+
+    .suggestion-btn {
+        border-radius: 999px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-5">
+    <div class="chat-shell">
+        <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-3">
+                <div>
+                    <h5 class="mb-1"><i class="fas fa-robot me-2"></i>Hirevue Assistant</h5>
+                    <small class="opacity-75">Career support, resume help, and platform guidance</small>
+                </div>
+                <button id="resetChatButton" class="btn btn-light btn-sm" type="button">New chat</button>
+            </div>
+
+            <div id="chatBoard" class="card-body chat-board p-4">
+                {% if messages %}
+                    {% for message in messages %}
+                    <div class="message-row {{ message.role }}">
+                        <div class="message-bubble">{{ message.content }}</div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div id="chatEmptyState" class="chat-empty rounded-4 p-4 text-center text-muted">
+                        <h6 class="fw-bold mb-2">Ask about jobs, resumes, interviews, or using the portal</h6>
+                        <p class="mb-0">This chatbot keeps session history and can answer from AI, FAQ, or local support rules.</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="card-body border-top bg-white">
+                <div class="d-flex flex-wrap gap-2 mb-3">
+                    {% for suggestion in suggestions %}
+                    <button class="btn btn-outline-primary btn-sm suggestion-btn" type="button" data-suggestion="{{ suggestion }}">{{ suggestion }}</button>
+                    {% endfor %}
+                </div>
+
+                <form id="chatForm">
+                    <div class="input-group input-group-lg">
+                        <input type="text" id="questionInput" name="question" class="form-control" placeholder="Ask a realistic career or platform question" value="{{ prefill_question }}" required>
+                        <button id="sendButton" class="btn btn-primary px-4" type="submit">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </form>
+
+                <div id="chatStatus" class="small text-muted mt-3"></div>
+            </div>
+        </div>
+
+        <div class="mt-4 text-center">
+            <a href="{{ '/user_dashboard' if session.get('user') else '/' }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let chatSessionToken = {{ chat_session_token|tojson }};
+
+function appendMessage(role, message) {
+    const board = document.getElementById("chatBoard");
+    const emptyState = document.getElementById("chatEmptyState");
+    if (emptyState) {
+        emptyState.remove();
+    }
+
+    const row = document.createElement("div");
+    row.className = `message-row ${role}`;
+
+    const bubble = document.createElement("div");
+    bubble.className = "message-bubble";
+    bubble.textContent = message;
+
+    row.appendChild(bubble);
+    board.appendChild(row);
+    board.scrollTop = board.scrollHeight;
+}
+
+function setStatus(message) {
+    document.getElementById("chatStatus").textContent = message || "";
+}
+
+async function askAI(question) {
+    const response = await fetch("/chat_api", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ question, session_token: chatSessionToken })
+    });
+
+    const data = await response.json();
+    if (!response.ok || !data.ok) {
+        throw new Error(data.error || "Chatbot request failed.");
+    }
+    chatSessionToken = data.session_token || chatSessionToken;
+    return data;
+}
+
+document.getElementById("chatForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
+    const input = document.getElementById("questionInput");
+    const button = document.getElementById("sendButton");
+    const question = input.value.trim();
+    if (!question) return;
+
+    appendMessage("user", question);
+    try {
+        setStatus("Thinking...");
+        button.disabled = true;
+        const result = await askAI(question);
+        appendMessage("assistant", result.answer);
+        setStatus(`Source: ${result.source}`);
+        input.value = "";
+    } catch (err) {
+        appendMessage("assistant", err.message);
+        setStatus("The assistant returned an error response.");
+    } finally {
+        button.disabled = false;
+    }
+});
+
+document.querySelectorAll("[data-suggestion]").forEach(function (button) {
+    button.addEventListener("click", function () {
+        document.getElementById("questionInput").value = this.dataset.suggestion;
+        document.getElementById("questionInput").focus();
+    });
+});
+
+document.getElementById("resetChatButton").addEventListener("click", async function () {
+    const response = await fetch("/chat_reset", { method: "POST" });
+    const data = await response.json();
+    if (data.ok) {
+        chatSessionToken = data.session_token;
+        window.location.reload();
+    }
+});
+
+if (document.getElementById("questionInput").value.trim() && !document.querySelector(".message-row")) {
+    document.getElementById("chatForm").dispatchEvent(new Event("submit"));
+}
+</script>
+{% endblock %}

@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}Application Results - Hirevue{% endblock %}
+
+{% block content %}
+<div class="container-fluid min-vh-100 py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <div class="card shadow-lg border-0 rounded-3">
+                <div class="card-body p-5">
+                    {% if error %}
+                    <div class="alert alert-danger" role="alert">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        <strong>Error:</strong> {{ error }}
+                    </div>
+                    {% elif status == 'Selected' %}
+                    <div class="text-center mb-4">
+                        <i class="fas fa-check-circle fa-4x text-success mb-3"></i>
+                        <h2 class="fw-bold text-success">Congratulations!</h2>
+                        <p class="text-muted">Your application has been selected</p>
+                    </div>
+                    {% elif status == 'Rejected' %}
+                    <div class="text-center mb-4">
+                        <i class="fas fa-times-circle fa-4x text-danger mb-3"></i>
+                        <h2 class="fw-bold text-danger">Application Not Selected</h2>
+                        <p class="text-muted">Thank you for your interest</p>
+                    </div>
+                    {% else %}
+                    <div class="text-center mb-4">
+                        <i class="fas fa-clock fa-4x text-info mb-3"></i>
+                        <h2 class="fw-bold text-info">Application Processed</h2>
+                        <p class="text-muted">Your application status has been updated.</p>
+                    </div>
+                    {% endif %}
+
+                    {% if job %}
+                    <!-- Job Information -->
+                    <div class="card bg-light border-0 mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold"><i class="fas fa-briefcase me-2"></i>{{ job[2] }}</h5>
+                            <h6 class="card-subtitle mb-3 text-muted"><i class="fas fa-building me-2"></i>{{ job[1] }}</h6>
+                            {% if job_description_highlights %}
+                            <p class="card-text text-muted mb-2">Job Overview:</p>
+                            <ul class="mb-0" style="line-height: 1.7;">
+                                {% for point in job_description_highlights %}
+                                <li>{{ point }}</li>
+                                {% endfor %}
+                            </ul>
+                            {% else %}
+                            <p class="card-text text-muted">Detailed description is currently unavailable.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Score and Status -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="card border-0 bg-primary text-white">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-percentage fa-2x mb-2"></i>
+                                    <h4 class="card-title">{{ score }}%</h4>
+                                    <p class="card-text">Match Score</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card border-0 bg-secondary text-white">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-chart-line fa-2x mb-2"></i>
+                                    <h4 class="card-title">{{ status }}</h4>
+                                    <p class="card-text">Application Status</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if missing_skills %}
+                    <div class="card border-warning mb-4">
+                        <div class="card-header bg-warning text-dark">
+                            <i class="fas fa-exclamation-triangle me-2"></i>Missing Skills
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex flex-wrap gap-2">
+                                {% for skill in missing_skills.split(',') %}
+                                <span class="badge bg-warning text-dark">{{ skill.strip() }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if job_skills and job_skills|trim|lower not in ['not specified', 'n/a', 'na', 'none'] %}
+                    <div class="card border-info mb-4">
+                        <div class="card-header bg-info text-white">
+                            <i class="fas fa-check-circle me-2"></i>Required Skills
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex flex-wrap gap-2">
+                                {% for skill in job_skills.split(',') %}
+                                <span class="badge bg-info">{{ skill.strip() }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="d-grid gap-2">
+                        {% if app_id %}
+                        <a href="/application_logs/{{ app_id }}" class="btn btn-outline-dark btn-lg">
+                            <i class="fas fa-stream me-2"></i>Open Application Timeline
+                        </a>
+                        {% endif %}
+                        <a href="/user_dashboard" class="btn btn-primary btn-lg">
+                            <i class="fas fa-tachometer-alt me-2"></i>Back to Dashboard
+                        </a>
+                        <a href="/career_guidance" class="btn btn-outline-success btn-lg">
+                            <i class="fas fa-graduation-cap me-2"></i>Get Career Guidance
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

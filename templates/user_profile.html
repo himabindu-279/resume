@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile - Hirevue{% endblock %}
+
+{% block content %}
+<div class="container-fluid min-vh-100 py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg border-0 rounded-3">
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-user-circle fa-4x text-primary mb-3"></i>
+                        <h2 class="fw-bold">My Profile</h2>
+                        <p class="text-muted">Manage your account information</p>
+                    </div>
+
+                    <!-- Profile Information -->
+                    <div class="row mb-4">
+                        <div class="col-sm-6">
+                            <div class="card bg-light border-0">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-user fa-2x text-primary mb-2"></i>
+                                    <h6 class="card-title">Name</h6>
+                                    <p class="card-text fw-bold">{{ user[0] or 'Not set' }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="card bg-light border-0">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-envelope fa-2x text-info mb-2"></i>
+                                    <h6 class="card-title">Email</h6>
+                                    <p class="card-text fw-bold">{{ user[1] or 'Not set' }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-sm-6">
+                            <div class="card bg-light border-0">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-map-marker-alt fa-2x text-success mb-2"></i>
+                                    <h6 class="card-title">Location</h6>
+                                    <p class="card-text fw-bold">{{ user[2] or 'Not set' }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="card bg-light border-0">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-birthday-cake fa-2x text-warning mb-2"></i>
+                                    <h6 class="card-title">Birthday</h6>
+                                    <p class="card-text fw-bold">{{ user[3] or 'Not set' }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Profile Picture -->
+                    {% if user[4] %}
+                    <div class="text-center mb-4">
+                        <img src="{{ url_for('static', filename=user[4]) }}" alt="Profile Picture" class="rounded-circle" style="width: 120px; height: 120px; object-fit: cover;">
+                    </div>
+                    {% endif %}
+
+                    <!-- Action Buttons -->
+                    <div class="d-grid gap-2">
+                        <a href="/profile" class="btn btn-primary btn-lg">
+                            <i class="fas fa-edit me-2"></i>Edit Profile
+                        </a>
+                        <a href="/user_dashboard" class="btn btn-outline-secondary btn-lg">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

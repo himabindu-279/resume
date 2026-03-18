@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Hirevue{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-5">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="fw-bold">
+                    <i class="fas fa-tachometer-alt me-3"></i>Admin Dashboard
+                </h1>
+                <div class="btn-group">
+                    <a href="/post_job" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Post Job
+                    </a>
+                    <a href="/view_applications" class="btn btn-info">
+                        <i class="fas fa-file-alt me-2"></i>View Applications
+                    </a>
+                    <a href="/import_jobs" class="btn btn-success">
+                        <i class="fas fa-download me-2"></i>Import Jobs
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Key Metrics -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card shadow-lg border-0 rounded-3 h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-users fa-3x text-primary mb-3"></i>
+                    <h5 class="card-title text-muted">Total Users</h5>
+                    <h2 class="fw-bold text-primary">{{ total_users }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-lg border-0 rounded-3 h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-briefcase fa-3x text-success mb-3"></i>
+                    <h5 class="card-title text-muted">Jobs Posted</h5>
+                    <h2 class="fw-bold text-success">{{ jobs|length }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-lg border-0 rounded-3 h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-file-alt fa-3x text-info mb-3"></i>
+                    <h5 class="card-title text-muted">Hiring Rate</h5>
+                    <h2 class="fw-bold text-info">{{ hiring_rate|default(0, true) }}%</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Applications per Job -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card shadow-lg border-0 rounded-3">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-bar me-2"></i>Applications per Job
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Job Title</th>
+                                <th class="text-end">Applications</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for job_title, count in apps_per_job %}
+                            <tr>
+                                <td>{{ job_title }}</td>
+                                <td class="text-end"><span class="badge bg-info">{{ count }}</span></td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="2" class="text-center text-muted">No applications yet</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Jobs Table -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card shadow-lg border-0 rounded-3">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-list me-2"></i>All Active Jobs
+                    </h5>
+                </div>
+                <div class="card-body" style="max-height: 500px; overflow-y: auto;">
+                    <table class="table table-hover">
+                        <thead class="table-light sticky-top">
+                            <tr>
+                                <th>Company</th>
+                                <th>Job Title</th>
+                                <th>Skills</th>
+                                <th>Vacancies</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for job in jobs %}
+                            <tr>
+                                <td>
+                                    <strong>{{ job[1] }}</strong>
+                                </td>
+                                <td>{{ job[2] }}</td>
+                                <td>
+                                    <small class="text-muted">{{ job[3] }}</small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary">{{ job[4] }}</span>
+                                </td>
+                                <td>
+                                    {% if job[6] == 'Open' %}
+                                    <span class="badge bg-success">Open</span>
+                                    {% elif job[6] == 'Closed' %}
+                                    <span class="badge bg-danger">Closed</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary">{{ job[6] }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="/view_applications" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="6" class="text-center text-muted py-5">
+                                    <i class="fas fa-inbox fa-3x mb-3"></i>
+                                    <p>No jobs posted yet. <a href="/post_job">Post a job</a></p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        transition: transform 0.3s, box-shadow 0.3s;
+        background-color: rgba(255, 255, 255, 0.9);
+    }
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2) !important;
+    }
+    .fw-bold {
+        text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+    }
+    h1.fw-bold {
+        color: white;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+    }
+    /* Set default light background for table header to avoid transparency issues on background */
+    .table-light th {
+        background-color: #f8f9fa !important;
+    }
+</style>
+{% endblock %}

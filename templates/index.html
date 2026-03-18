@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Better Talent Starts With Skills{% endblock %}
+
+{% block content %}
+<div class="row align-items-center" style="min-height:70vh;">
+    <div class="col-md-10 text-white mx-auto">
+        <h1 class="display-4 fw-bold" style="font-size:3.5rem; line-height:1.05;">
+            Better talent starts with <span class="text-white">skills</span>
+        </h1>
+        <p class="lead text-white-50 mt-3" style="font-size:1.25rem; max-width:650px;">The most trusted skills-based platform for hiring — match candidates faster by assessing their real skills and fit.</p>
+
+        <div class="mt-4">
+            <a href="/companies" class="btn btn-primary-custom btn-lg me-2">
+                <i class="fas fa-briefcase"></i> Explore Companies
+            </a>
+            <a href="/user_register" class="btn btn-outline-light btn-lg">
+                <i class="fas fa-user-plus"></i> Get Started for Free
+            </a>
+        </div>
+
+        <div class="mt-4 text-white-50">
+            <small>Trusted by companies and startups — post jobs, screen candidates, and hire with confidence.</small>
+        </div>
+    </div>
+</div>
+
+<hr class="my-5" style="border-color: rgba(255,255,255,0.06);">
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card card-custom p-4 mb-3">
+            <h5 class="fw-bold">Post Jobs</h5>
+            <p class="text-muted">Create job postings and list required skills for automatic matching.</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card card-custom p-4 mb-3">
+            <h5 class="fw-bold">Smart Matching</h5>
+            <p class="text-muted">Our resume matcher scores applicants based on skill overlap.</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card card-custom p-4 mb-3">
+            <h5 class="fw-bold">Quick Decisions</h5>
+            <p class="text-muted">See candidates' match scores and select top talent quickly.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

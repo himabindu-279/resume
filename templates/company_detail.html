@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}{{ company[1] }} - Hirevue{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-5">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <a href="/companies" class="btn btn-outline-secondary mb-3">
+                <i class="fas fa-arrow-left me-2"></i>Back to Companies
+            </a>
+        </div>
+    </div>
+
+    <!-- Company Header -->
+    <div class="card shadow-lg border-0 rounded-3 mb-4">
+        <div class="card-body p-5">
+            <div class="row align-items-center">
+                <div class="col-md-2 text-center">
+                    {% if company[3] %}
+                    <img src="{{ company[3] }}" alt="{{ company[1] }}" style="max-width: 100px;">
+                    {% else %}
+                    <i class="fas fa-building fa-4x text-primary"></i>
+                    {% endif %}
+                </div>
+                <div class="col-md-10">
+                    <h1 class="fw-bold">{{ company[1] }}</h1>
+                    <p class="text-muted">{{ company[2] }}</p>
+                    <div class="mt-3">
+                        {% if company[4] %}
+                        <small class="text-muted me-3">
+                            <i class="fas fa-map-marker-alt me-1"></i>{{ company[4] }}
+                        </small>
+                        {% endif %}
+                        {% if company[5] %}
+                        <a href="{{ company[5] }}" target="_blank" class="btn btn-sm btn-primary">
+                            <i class="fas fa-globe me-1"></i>Visit Website
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Open Positions -->
+    <div class="row">
+        <div class="col-md-12">
+            <h3 class="fw-bold mb-4">
+                <i class="fas fa-briefcase me-2"></i>Open Positions
+            </h3>
+        </div>
+    </div>
+
+    <div class="row">
+        {% for job in jobs %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card shadow-lg border-0 rounded-3 h-100">
+                <div class="card-body">
+                    <h5 class="card-title fw-bold">{{ job[2] }}</h5>
+                    <p class="card-text text-muted">{{ job[5][:100] }}...</p>
+                    {% if job[3] and job[3]|trim|lower not in ['not specified', 'n/a', 'na', 'none'] %}
+                    <div class="mb-3">
+                        <small class="text-muted">
+                            <strong>Skills:</strong> {{ job[3] }}
+                        </small>
+                    </div>
+                    {% endif %}
+                    <div>
+                        <span class="badge bg-primary me-2">Vacancies: {{ job[4] }}</span>
+                    </div>
+                </div>
+                <div class="card-footer bg-light border-0">
+                    <a href="/apply/{{ job[0] }}" class="btn btn-primary btn-sm w-100">
+                        <i class="fas fa-paper-plane me-2"></i>Apply Now
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-md-12">
+            <div class="alert alert-info text-center">
+                <i class="fas fa-inbox fa-3x mb-3"></i>
+                <p>No open positions at this time</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

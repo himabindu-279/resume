@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}All Applications - Admin Evaluation{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1><i class="fas fa-users text-gradient"></i> Candidate Evaluations</h1>
+            <p class="text-muted">Review and rank all applications based on skill match scores</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="/admin_dashboard" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    {% if applications %}
+    <div class="table-responsive">
+        <table class="table table-hover" style="border-collapse: collapse;">
+            <thead style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                <tr>
+                    <th style="padding: 15px; border: none;">Rank</th>
+                    <th style="padding: 15px; border: none;"><i class="fas fa-user"></i> Candidate</th>
+                    <th style="padding: 15px; border: none;"><i class="fas fa-briefcase"></i> Position</th>
+                    <th style="padding: 15px; border: none;"><i class="fas fa-building"></i> Company</th>
+                    <th style="padding: 15px; border: none;"><i class="fas fa-file-pdf"></i> Resume</th>
+                    <th style="padding: 15px; border: none;"><i class="fas fa-star"></i> Score</th>
+                    <th style="padding: 15px; border: none;"><i class="fas fa-check-circle"></i> Status</th>
+                    <th style="padding: 15px; border: none;">Logs</th>
+                    <th style="padding: 15px; border: none;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for loop_idx, app in applications %}
+                <tr style="border-bottom: 1px solid #e0e0e0;">
+                    <td style="padding: 15px;">
+                        {% if app[5] >= 80 %}
+                            <span class="badge bg-success" style="font-size: 0.9rem;">#{{ loop.index }}</span>
+                        {% elif app[5] >= 60 %}
+                            <span class="badge bg-warning" style="font-size: 0.9rem;">#{{ loop.index }}</span>
+                        {% else %}
+                            <span class="badge bg-danger" style="font-size: 0.9rem;">#{{ loop.index }}</span>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 15px; font-weight: 600;">{{ app[1] }}</td>
+                    <td style="padding: 15px;">{{ app[3] }}</td>
+                    <td style="padding: 15px;">{{ app[4] }}</td>
+                    <td style="padding: 15px;">
+                        <a href="/download_resume/{{ app[0] }}" class="text-decoration-none" title="Download resume">
+                            <i class="fas fa-download"></i> {{ app[2][:20] }}...
+                        </a>
+                    </td>
+                    <td style="padding: 15px;">
+                        <div class="progress" style="height: 25px; border-radius: 5px;">
+                            {% if app[5] >= 80 %}
+                                <div class="progress-bar bg-success" role="progressbar" style="width: {{ app[5] }}%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;" title="{{ app[5] }}% match">
+                                    {{ app[5] }}%
+                                </div>
+                            {% elif app[5] >= 60 %}
+                                <div class="progress-bar bg-warning" role="progressbar" style="width: {{ app[5] }}%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;" title="{{ app[5] }}% match">
+                                    {{ app[5] }}%
+                                </div>
+                            {% else %}
+                                <div class="progress-bar bg-danger" role="progressbar" style="width: {{ app[5] }}%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;" title="{{ app[5] }}% match">
+                                    {{ app[5] }}%
+                                </div>
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td style="padding: 15px;">
+                        {% if app[6] == 'Selected' %}
+                            <span class="badge bg-success"><i class="fas fa-check-circle"></i> Selected</span>
+                        {% else %}
+                            <span class="badge bg-danger"><i class="fas fa-times-circle"></i> Rejected</span>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 15px;">
+                        <a href="/application_logs/{{ app[0] }}" class="btn btn-sm btn-outline-secondary" title="View logs">
+                            <i class="fas fa-history"></i>
+                        </a>
+                    </td>
+                    <td style="padding: 15px;">
+                        <div class="btn-group btn-group-sm" role="group">
+                            {% if app[6] == 'Selected' %}
+                                <a href="/update_application_status/{{ app[0] }}/Rejected" class="btn btn-outline-danger" title="Mark as rejected">
+                                    <i class="fas fa-times"></i>
+                                </a>
+                            {% else %}
+                                <a href="/update_application_status/{{ app[0] }}/Selected" class="btn btn-outline-success" title="Mark as selected">
+                                    <i class="fas fa-check"></i>
+                                </a>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                <strong><i class="fas fa-info-circle"></i> How Scoring Works:</strong>
+                <ul class="mb-0 mt-2">
+                    <li><strong>Score ≥ 80%:</strong> Excellent match - candidate has most required skills</li>
+                    <li><strong>Score 60-79%:</strong> Good match - candidate has many required skills</li>
+                    <li><strong>Score &lt; 60%:</strong> Fair match - candidate has some required skills</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+        <i class="fas fa-info-circle"></i> No applications received yet.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

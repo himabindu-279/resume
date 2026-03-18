@@ -1,0 +1,516 @@
+{% extends "base.html" %}
+
+{% block title %}User Dashboard - Hirevue{% endblock %}
+
+{% block extra_css %}
+<style>
+    .modules-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 22px;
+        margin-top: 30px;
+    }
+
+    /* Keep 5th and 6th module centered in second row on large screens */
+    .modules-grid .module-card:nth-child(5) {
+        grid-column: 2;
+    }
+
+    .modules-grid .module-card:nth-child(6) {
+        grid-column: 3;
+    }
+
+    @media (max-width: 1199px) {
+        .modules-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .modules-grid .module-card:nth-child(5),
+        .modules-grid .module-card:nth-child(6) {
+            grid-column: auto;
+        }
+    }
+
+    @media (max-width: 767px) {
+        .modules-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .dashboard-hero {
+        background: transparent;
+        border: none;
+        border-radius: 0;
+        padding: 0;
+        backdrop-filter: none;
+        box-shadow: none;
+    }
+
+    .dashboard-hero h1,
+    .dashboard-hero p,
+    .modules-title {
+        color: #f7f9ff;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
+    }
+
+    .dashboard-hero .text-gradient {
+        background: none;
+        -webkit-text-fill-color: #8fb0ff;
+        color: #8fb0ff;
+    }
+
+    .module-card {
+        cursor: pointer;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        background: rgba(255, 255, 255, 0.94) !important;
+    }
+
+    .module-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .module-card h5 {
+        color: #1b2433;
+    }
+
+    .module-card .module-subtext {
+        color: #5a6678;
+    }
+
+    .back-btn-container {
+        margin-bottom: 20px;
+    }
+
+    .back-modules-btn {
+        background: rgba(255, 255, 255, 0.94);
+        color: #1f2a44;
+        border: 1px solid rgba(31, 42, 68, 0.18);
+        font-weight: 600;
+        box-shadow: 0 8px 18px rgba(12, 20, 35, 0.22);
+    }
+
+    .back-modules-btn:hover,
+    .back-modules-btn:focus {
+        background: #ffffff;
+        color: #0d1b32;
+        border-color: rgba(13, 27, 50, 0.35);
+    }
+
+    #contentArea > div {
+        margin-bottom: 28px;
+    }
+
+    .tracker-card {
+        border: none;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.96);
+        box-shadow: 0 14px 35px rgba(23, 41, 86, 0.08);
+    }
+
+    .tracker-progress {
+        height: 8px;
+        background: #e9eef8;
+        border-radius: 999px;
+        overflow: hidden;
+    }
+
+    .tracker-progress > span {
+        display: block;
+        height: 100%;
+        background: linear-gradient(90deg, #0d6efd, #20c997);
+    }
+
+    .focus-panel {
+        background: linear-gradient(135deg, rgba(13, 110, 253, 0.1), rgba(32, 201, 151, 0.12));
+        border: 1px solid rgba(13, 110, 253, 0.15);
+    }
+
+    .application-row:hover {
+        background: rgba(13, 110, 253, 0.04);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="dashboard-hero">
+                <h1><i class="fas fa-briefcase text-gradient"></i> Welcome, <span class="text-gradient">{{ name }}</span></h1>
+                <p class="mb-0">Track your applications with real hiring stages and clear next actions.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="gridView" class="row">
+        <div class="col-12">
+            <h3 class="mb-4 modules-title">Available Modules</h3>
+            <div class="modules-grid">
+                <div class="card card-custom module-card" onclick="expandModule('dashboardModule', 'Dashboard')">
+                    <div class="card-body text-center">
+                        <h5 class="card-title"><i class="fas fa-home fa-2x text-primary mb-3"></i></h5>
+                        <h5>Dashboard</h5>
+                        <p class="module-subtext small mb-0">See your application totals</p>
+                    </div>
+                </div>
+
+                <div class="card card-custom module-card" onclick="expandModule('trackerModule', 'Job Tracker')">
+                    <div class="card-body text-center">
+                        <h5 class="card-title"><i class="fas fa-tasks fa-2x text-info mb-3"></i></h5>
+                        <h5>Job Tracker</h5>
+                        <p class="module-subtext small mb-0">Follow status, progress, and next action</p>
+                    </div>
+                </div>
+
+                <div class="card card-custom module-card" onclick="expandModule('jobsModule', 'Find Jobs')">
+                    <div class="card-body text-center">
+                        <h5 class="card-title"><i class="fas fa-search fa-2x text-success mb-3"></i></h5>
+                        <h5>Find Jobs</h5>
+                        <p class="module-subtext small mb-0">Browse open opportunities</p>
+                    </div>
+                </div>
+
+                <div class="card card-custom module-card" onclick="expandModule('resumeModule', 'Resume Builder')">
+                    <div class="card-body text-center">
+                        <h5 class="card-title"><i class="fas fa-file-pdf fa-2x text-danger mb-3"></i></h5>
+                        <h5>Resume Builder</h5>
+                        <p class="module-subtext small mb-0">Create a resume for ATS review</p>
+                    </div>
+                </div>
+
+                <div class="card card-custom module-card" onclick="expandModule('careerModule', 'Career Path')">
+                    <div class="card-body text-center">
+                        <h5 class="card-title"><i class="fas fa-road fa-2x text-warning mb-3"></i></h5>
+                        <h5>Career Path</h5>
+                        <p class="module-subtext small mb-0">Improve the right skills</p>
+                    </div>
+                </div>
+
+                <div class="card card-custom module-card" onclick="expandModule('historyModule', 'Application History')">
+                    <div class="card-body text-center">
+                        <h5 class="card-title"><i class="fas fa-history fa-2x text-secondary mb-3"></i></h5>
+                        <h5>Application History</h5>
+                        <p class="module-subtext small mb-0">Review your recent submissions</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="fullModuleView" style="display:none;">
+        <div class="back-btn-container">
+            <button class="btn back-modules-btn" onclick="backToGrid()"><i class="fas fa-arrow-left me-2"></i>Back to Modules</button>
+        </div>
+
+        <div id="contentArea">
+            <div id="dashboardModule" style="display:none;">
+                <div class="card card-custom p-4 mb-4">
+                    <h3 class="mb-4"><i class="fas fa-chart-bar me-2"></i>Your Dashboard</h3>
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <div class="card text-center p-3 bg-light border-0">
+                                <h4 class="text-primary mb-1">{{ stats.total if stats else 0 }}</h4>
+                                <p class="mb-0 text-muted">Total Applications</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card text-center p-3 bg-light border-0">
+                                <h4 class="text-success mb-1">{{ stats.selected if stats else 0 }}</h4>
+                                <p class="mb-0 text-muted">Selected</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card text-center p-3 bg-light border-0">
+                                <h4 class="text-warning mb-1">{{ stats.pending if stats else 0 }}</h4>
+                                <p class="mb-0 text-muted">Active</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card text-center p-3 bg-light border-0">
+                                <h4 class="text-danger mb-1">{{ stats.rejected if stats else 0 }}</h4>
+                                <p class="mb-0 text-muted">Rejected</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="alert alert-info" role="alert">
+                    <i class="fas fa-info-circle me-2"></i>Use the Job Tracker module to see application progress, missing skills, and the recommended next action.
+                </div>
+            </div>
+
+            <div id="trackerModule" style="display:none;">
+                <div class="row g-4 mb-4">
+                    <div class="col-md-3">
+                        <div class="tracker-card p-4 text-center h-100">
+                            <div class="text-muted small mb-2">Submitted</div>
+                            <div class="display-6 fw-bold text-secondary">{{ tracker_counts.submitted }}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="tracker-card p-4 text-center h-100">
+                            <div class="text-muted small mb-2">Under Review</div>
+                            <div class="display-6 fw-bold text-info">{{ tracker_counts.review }}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="tracker-card p-4 text-center h-100">
+                            <div class="text-muted small mb-2">Interview Stage</div>
+                            <div class="display-6 fw-bold text-warning">{{ tracker_counts.interview }}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="tracker-card p-4 text-center h-100">
+                            <div class="text-muted small mb-2">Closed</div>
+                            <div class="display-6 fw-bold text-dark">{{ tracker_counts.closed }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                {% if tracker_focus %}
+                <div class="tracker-card focus-panel p-4 mb-4">
+                    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+                        <div>
+                            <h4 class="mb-1">Current focus: {{ tracker_focus.title }}</h4>
+                            <p class="text-muted mb-2">{{ tracker_focus.company }} • Applied {{ tracker_focus.applied_on }}</p>
+                            <span class="badge bg-{{ tracker_focus.status_badge }}">{{ tracker_focus.status_label }}</span>
+                        </div>
+                        <a href="/application_logs/{{ tracker_focus.id }}" class="btn btn-outline-primary btn-sm">View timeline</a>
+                    </div>
+                    <div class="tracker-progress mt-3 mb-2"><span style="width: {{ tracker_focus.progress }}%;"></span></div>
+                    <p class="mb-1"><strong>Next action:</strong> {{ tracker_focus.next_action }}</p>
+                    {% if tracker_focus.missing_skills %}
+                    <div class="mt-3">
+                        {% for skill in tracker_focus.missing_skills %}
+                        <span class="badge bg-light text-dark border me-2 mb-2">{{ skill }}</span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                <div class="tracker-card p-4">
+                    <h3 class="mb-1"><i class="fas fa-tasks me-2"></i>Job Tracker</h3>
+                    <p class="text-muted mb-4">Each application now moves through submitted, review, shortlist, interview, and final decision stages.</p>
+
+                    {% if tracker_applications %}
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Role</th>
+                                    <th>Applied</th>
+                                    <th>Score</th>
+                                    <th>Status</th>
+                                    <th>Progress</th>
+                                    <th>Next Action</th>
+                                    <th>Timeline</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for app in tracker_applications %}
+                                <tr class="application-row">
+                                    <td>
+                                        <div class="fw-semibold">{{ app.title }}</div>
+                                        <div class="text-muted small">{{ app.company }}</div>
+                                        {% if app.missing_skills %}
+                                        <div class="mt-2">
+                                            {% for skill in app.missing_skills[:3] %}
+                                            <span class="badge bg-light text-dark border me-1 mb-1">{{ skill }}</span>
+                                            {% endfor %}
+                                        </div>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-muted">{{ app.applied_on }}</td>
+                                    <td><span class="badge bg-primary">{{ app.score }}%</span></td>
+                                    <td><span class="badge bg-{{ app.status_badge }}">{{ app.status_label }}</span></td>
+                                    <td style="min-width: 150px;">
+                                        <div class="tracker-progress"><span style="width: {{ app.progress }}%;"></span></div>
+                                        <div class="small text-muted mt-2">{{ app.progress }}%</div>
+                                    </td>
+                                    <td class="small">{{ app.next_action }}</td>
+                                    <td><a href="/application_logs/{{ app.id }}" class="btn btn-sm btn-outline-secondary">Logs</a></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info mb-0">No applications yet. Start with Find Jobs and apply to a role that matches your stack.</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div id="historyModule" style="display:none;">
+                <div class="tracker-card p-4">
+                    <h3 class="mb-4"><i class="fas fa-history me-2"></i>Recent Applications</h3>
+                    {% if my_applications %}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Position</th>
+                                    <th>Company</th>
+                                    <th>Applied</th>
+                                    <th>Score</th>
+                                    <th>Status</th>
+                                    <th>Logs</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for app in my_applications %}
+                                <tr>
+                                    <td><strong>{{ app.title }}</strong></td>
+                                    <td>{{ app.company }}</td>
+                                    <td>{{ app.applied_on }}</td>
+                                    <td><span class="badge bg-info">{{ app.score }}%</span></td>
+                                    <td><span class="badge bg-{{ app.status_badge }}">{{ app.status_label }}</span></td>
+                                    <td><a href="/application_logs/{{ app.id }}" class="btn btn-sm btn-outline-secondary">View</a></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info mb-0">Your application history will appear here after your first submission.</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div id="jobsModule" style="display:none;">
+                <h2 class="section-title"><i class="fas fa-search me-2"></i>Find Jobs</h2>
+                {% if jobs %}
+                <div class="row">
+                    {% for job in jobs %}
+                    <div class="col-md-6 mb-4">
+                        <div class="card card-custom job-card h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <div>
+                                        <h5 class="card-title text-gradient fw-bold">{{ job[2] }}</h5>
+                                        <p class="card-text text-muted mb-0">
+                                            <i class="fas fa-building me-1"></i>{{ job[1] }}
+                                            {% if job[7] %}
+                                            <a href="{{ job[7] }}" target="_blank" class="ms-2 text-decoration-none" title="Visit company website">
+                                                <i class="fas fa-external-link-alt"></i>
+                                            </a>
+                                            {% endif %}
+                                        </p>
+                                    </div>
+                                    <span class="badge bg-success">{{ job[4] }} Open</span>
+                                </div>
+
+                                {% if job[3] and job[3]|trim|lower not in ['not specified', 'n/a', 'na', 'none'] %}
+                                <div class="mb-3">
+                                    <small class="text-muted"><strong>Required Skills:</strong></small>
+                                    <div class="mt-2">
+                                        {% for skill in job[3].split(',') %}
+                                        <span class="badge bg-light text-dark me-1 mb-1">{{ skill.strip() }}</span>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                {% endif %}
+
+                                <div class="mb-3">
+                                    <small class="text-muted"><strong>Description:</strong></small>
+                                    <p class="card-text mt-2" style="font-size: 0.9rem;">{{ (job[5] or 'Description not available')[:150] }}{% if job[5] and job[5]|length > 150 %}...{% endif %}</p>
+                                </div>
+
+                                <a href="/apply/{{ job[0] }}" class="btn btn-primary-custom w-100"><i class="fas fa-paper-plane me-2"></i>Apply Now</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="alert alert-info"><i class="fas fa-info-circle me-2"></i>No jobs available at the moment. Come back soon.</div>
+                {% endif %}
+            </div>
+
+            <div id="resumeModule" style="display:none;">
+                <div class="card card-custom p-4">
+                    <h3 class="mb-4"><i class="fas fa-file-pdf me-2"></i>Resume Builder</h3>
+                    <p class="text-muted">Build an ATS-friendly resume and keep it aligned to the jobs you apply for.</p>
+                    <div class="alert alert-info"><i class="fas fa-lightbulb me-2"></i>Use the missing skills from Job Tracker to decide what to add or strengthen.</div>
+                    <a href="/resume_builder" class="btn btn-primary-custom"><i class="fas fa-plus me-2"></i>Create New Resume</a>
+                </div>
+            </div>
+
+            <div id="careerModule" style="display:none;">
+                <div class="card card-custom p-4">
+                    <h3 class="mb-4"><i class="fas fa-road me-2"></i>Career Path</h3>
+                    <p class="text-muted">Use role gaps from your applications to decide what to learn next.</p>
+                    <div class="alert alert-info"><i class="fas fa-graduation-cap me-2"></i>Move from job tracking to skill planning with guided recommendations.</div>
+                    <a href="/career_guidance" class="btn btn-primary-custom"><i class="fas fa-external-link-alt me-2"></i>View Career Guidance</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const modules = ['dashboardModule', 'trackerModule', 'jobsModule', 'resumeModule', 'careerModule', 'historyModule'];
+
+function hideAllModules() {
+    modules.forEach(function (moduleId) {
+        const element = document.getElementById(moduleId);
+        if (element) {
+            element.style.display = 'none';
+        }
+    });
+}
+
+function expandModule(moduleId, moduleName, pushToHistory = true) {
+    if (pushToHistory) {
+        history.pushState({ module: moduleId }, moduleName, '#' + moduleId);
+    }
+
+    document.getElementById('gridView').style.display = 'none';
+    document.getElementById('fullModuleView').style.display = 'block';
+
+    hideAllModules();
+    const selectedModule = document.getElementById(moduleId);
+    if (selectedModule) {
+        selectedModule.style.display = 'block';
+    }
+    window.scrollTo(0, 0);
+}
+
+function showGrid() {
+    document.getElementById('gridView').style.display = 'block';
+    document.getElementById('fullModuleView').style.display = 'none';
+    hideAllModules();
+}
+
+function backToGrid() {
+    if (window.location.hash) {
+        history.replaceState(null, document.title, window.location.pathname + window.location.search);
+    }
+    showGrid();
+}
+
+window.addEventListener('popstate', function () {
+    if (window.location.hash) {
+        const moduleId = window.location.hash.substring(1);
+        if (modules.includes(moduleId)) {
+            expandModule(moduleId, '', false);
+            return;
+        }
+    }
+    showGrid();
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    if (window.location.hash) {
+        const moduleId = window.location.hash.substring(1);
+        if (modules.includes(moduleId)) {
+            expandModule(moduleId, '', false);
+            return;
+        }
+    }
+    history.replaceState(null, document.title, window.location.pathname + window.location.search);
+});
+</script>
+{% endblock %}
